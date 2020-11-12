@@ -6,10 +6,12 @@ module Api
       def update
         session = SessionGroup.find_by(slug: shared_image_params[:slug])
 
-        if session.shared_image.update!(data_url: shared_image_params[:data_url])
-          render jsonapi: session.shared_image
+        if session.blank? || session.shared_image.blank?
+          render json: {}, status: 404
+        elsif session.shared_image.update!(data_url: shared_image_params[:data_url])
+          render jsonapi: session.shared_image, status: 200
         else
-          render jsonapi: session.shared_image.errors
+          render jsonapi: session.shared_image.errors, status: 500
         end
       end
 
