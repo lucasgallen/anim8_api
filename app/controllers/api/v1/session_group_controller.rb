@@ -9,7 +9,7 @@ module Api
         if session.present?
           render jsonapi: session
         else
-          # return 404 not found
+          render json: {}, status: 404
         end
       end
 
