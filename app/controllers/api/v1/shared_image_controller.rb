@@ -9,6 +9,7 @@ module Api
         if session.blank? || session.shared_image.blank?
           render json: {}, status: 404
         elsif session.shared_image.update!(data_url: shared_image_params[:data_url])
+          session.touch(:image_updated_at)
           render jsonapi: session.shared_image, status: 200
         else
           render jsonapi: session.shared_image.errors, status: 500

@@ -4,7 +4,9 @@ class SessionGroup < ApplicationRecord
   has_one :shared_image, dependent: :destroy
 
   #7fffffffffffffff in Hex
-  MAX_RANDOM_INT = 9223372036854775807
+  MAX_RANDOM_INT     = 9223372036854775807
+  MAX_IDLE           = 1.day
+  CLEANUP_BATCH_SIZE = 300
 
   protected
 
@@ -20,5 +22,10 @@ class SessionGroup < ApplicationRecord
 
   def generate_slug
     rand(MAX_RANDOM_INT).to_s(32)
+  end
+
+  def self.cleanup_stale_sessions
+    stale_sessions = where("image_updated_at < ?", MAX_IDLE.ago)
+    stale_sessions.in_batches(of: CLEANUP_BATCH_SIZE).destroy_all
   end
 end
