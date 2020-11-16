@@ -1,7 +1,7 @@
 class SessionGroup < ApplicationRecord
   before_create :init
   after_create :create_shared_image
-  has_one :shared_image
+  has_one :shared_image, dependent: :destroy
 
   #7fffffffffffffff in Hex
   MAX_RANDOM_INT = 9223372036854775807
