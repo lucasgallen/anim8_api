@@ -42,3 +42,5 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem "rack-attack", "~> 6.3"
 
 gem "rufus-scheduler", "~> 3.6"
+
+gem "rack-cors", "~> 1.1"
