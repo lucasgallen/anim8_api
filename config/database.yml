@@ -3,6 +3,7 @@
 default: &default
   adapter: postgresql
   encoding: unicode
+  host: <%= ENV.fetch("DATABASE_HOST") { 'localhost' } %>
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
@@ -13,9 +14,9 @@ development:
 
 staging:
   <<: *default
-  database: <%= ENV[DATABASE_NAME] %>
-  username: <%= ENV[DATABASE_USERNAME] %>
-  password: <%= ENV[DATABASE_PASSWORD] %>
+  database: <%= ENV['DATABASE_NAME'] %>
+  username: <%= ENV['DATABASE_USERNAME'] %>
+  password: <%= ENV['DATABASE_PASSWORD'] %>
 
   # The specified database role being used to connect to postgres.
   # To create additional roles in postgres see `$ createuser --help`.
@@ -72,6 +73,6 @@ test:
 #
 production:
   <<: *default
-  database: <%= ENV[DATABASE_NAME] %>
-  username: <%= ENV[DATABASE_USERNAME] %>
-  password: <%= ENV[DATABASE_PASSWORD] %>
+  database: <%= ENV['DATABASE_NAME'] %>
+  username: <%= ENV['DATABASE_USERNAME'] %>
+  password: <%= ENV['DATABASE_PASSWORD'] %>
