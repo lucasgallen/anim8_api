@@ -1,0 +1,77 @@
+version: '3'
+services:
+  nginx:
+    image: nginx:1.17.9-alpine
+    depends_on:
+      - api
+      - web
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - react_build:/usr/share/nginx/html
+      - ./data/cache/rails:/etc/nginx_cache/rails
+      - ./data/nginx/auth:/etc/nginx/auth
+      - ./data/nginx/conf.d:/etc/nginx/conf.d
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    links:
+      - api
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+  web:
+    image: lucasgallen/anim8-react:latest
+    container_name: 'anim8_react'
+    depends_on:
+      - api
+    environment:
+      API_SERVER: ${API_SERVER}
+      API_TOKEN: ${API_TOKEN}
+    volumes:
+      - .:/app
+      - node_modules:/usr/src/app/node_modules
+      - react_build:/usr/src/app/build
+
+  api:
+    image: lucasgallen/anim8-api:latest
+    container_name: 'anim8_api'
+    depends_on:
+      - db
+    environment:
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      PGPASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_NAME: ${DATABASE_NAME}
+      RAILS_ENV: 'staging'
+      RAILS_PORT: ${RAILS_STAGING_PORT}
+      BUNDLE_PATH: /usr/local/bundle
+      RUBYOPT: -W:no-deprecated -W:no-experimental
+      DATABASE_HOST: db
+    volumes:
+      - .:/app
+      - ./data/nginx/conf.d:/usr/src/app/data/nginx/conf.d
+      - gems:/usr/local/bundle
+
+  db:
+    image: postgres:11
+    container_name: anim8_db
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    expose:
+      - "5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+
+volumes:
+  gems:
+  dbdata:
+  node_modules:
+  react_build:
