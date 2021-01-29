@@ -6,6 +6,7 @@ Rails.application.routes.draw do
       get   'session_groups/new_session', to: 'session_group#new_session'
       get   'session_group/:slug', to: 'session_group#show', as: 'session_group'
       patch 'shared_image/:slug', to: 'shared_image#update', as: 'shared_image_update'
+      patch 'session_group/:slug', to: 'session_group#update', as: 'session_group_update'
     end
   end
 end

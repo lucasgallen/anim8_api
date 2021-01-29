@@ -11,6 +11,20 @@ module Api
         else
           render json: {}, status: 404
         end
+
+        session.update(image_ready: false) if session && session.image_ready?
+      end
+
+      def update
+        session = SessionGroup.find_by(slug: session_group_params[:slug])
+
+        if session.blank?
+          render json: {}, status: 404
+        elsif session.update!(attributes)
+          render jsonapi: session, status: 200
+        else
+          render jsonapi: session.errors, status: 500
+        end
       end
 
       def new_session 
@@ -25,8 +39,14 @@ module Api
 
       private
 
+      def attributes
+        attrs = [:image_ready]
+        attrs.map{ |attr| [attr, session_group_params[attr]] }
+             .to_h
+      end
+
       def session_group_params
-        params.permit(:slug)
+        params.permit(:slug, :image_ready)
       end
 
       def restrict_access
