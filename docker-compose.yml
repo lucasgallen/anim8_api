@@ -54,6 +54,10 @@ services:
       BUNDLE_PATH: /usr/local/bundle
       RUBYOPT: -W:no-deprecated -W:no-experimental
       DATABASE_HOST: db
+    logging:
+      driver: sumologic
+      options:
+        sumo-url: ${SUMO_URL}
     volumes:
       - .:/app
       - ./data/nginx/conf.d:/usr/src/app/data/nginx/conf.d
