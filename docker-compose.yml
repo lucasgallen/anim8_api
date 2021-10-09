@@ -55,7 +55,7 @@ services:
       RUBYOPT: -W:no-deprecated -W:no-experimental
       DATABASE_HOST: db
     logging:
-      driver: sumologic
+      driver: sumologic:latest
       options:
         sumo-url: ${SUMO_URL}
     volumes:
